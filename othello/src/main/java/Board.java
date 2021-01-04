@@ -1,11 +1,6 @@
-
+import static Constants.Constants.*;
 
 public class Board {
-    public static final int BLACK = 0;
-    public static final int WHITE = 1;
-    public static final int EMPTY = -1;
-
-    public static final int BOARDSIZE = 8;
 
     private int[][] boardObject;
 
@@ -30,7 +25,12 @@ public class Board {
         return boardObject;
     }
 
+    public void setPiece(int piece, int x, int y) {
+        boardObject[x][y] = piece;
+    }
+
     public void printBoard(){
+        System.out.println("Black: " + BLACK + ", White: " + WHITE);
         int y = 0;
         int x = 0;
         while(y < BOARDSIZE){
