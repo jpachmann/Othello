@@ -102,7 +102,7 @@ public class Game {
             neighbours[i][SOUTH_WEST] = findNeighbour(move, i, SOUTH_WEST);
             neighbours[i][WEST] = findNeighbour(move, i, WEST);
 
-            System.out.println("neighbours of " + move.getX() + ", " + move.getY() + " with distance " +
+            System.out.println("neighbours of " + move.getX() + "," + move.getY() + " with distance " +
                     i + ": " + Arrays.toString(neighbours[i]));
         }
 
@@ -111,44 +111,49 @@ public class Game {
 
     private int findNeighbour(Move position, int distance, int direction) {
         int boardOccupiedBy = -10;
-        Move move = new Move(position.getX(), position.getY());
 
-        switch (direction){
-            case NORTH_WEST:
-                move.setX(position.getX() - distance);
-                move.setY(position.getY() - distance);
+        int x = -10;
+        int y = -10;
 
-            case NORTH:
-                move.setX(position.getX() - distance);
-                move.setY(position.getY());
-
-            case NORTH_EAST:
-                move.setX(position.getX() - distance);
-                move.setY(position.getY() + distance);
-
-            case EAST:
-                move.setX(position.getX());
-                move.setY(position.getY() + distance);
-
-            case SOUTH_EAST:
-                move.setX(position.getX() + distance);
-                move.setY(position.getY() + distance);
-
-            case SOUTH:
-                move.setX(position.getX() + distance);
-                move.setY(position.getY());
-
-            case SOUTH_WEST:
-                move.setX(position.getX() + distance);
-                move.setY(position.getY() - distance);
-
-            case WEST:
-                move.setX(position.getX());
-                move.setY(position.getY() - distance);
+        switch (direction) {
+            case NORTH_WEST -> {
+                x = position.getX() - distance;
+                y = position.getY() - distance;
+            }
+            case NORTH -> {
+                x = position.getX();
+                y = position.getY() - distance;
+            }
+            case NORTH_EAST -> {
+                x = position.getX() + distance;
+                y = position.getY() - distance;
+            }
+            case EAST -> {
+                x = position.getX() + distance;
+                y = position.getY();
+            }
+            case SOUTH_EAST -> {
+                x = position.getX() + distance;
+                y = position.getY() + distance;
+            }
+            case SOUTH -> {
+                x = position.getX();
+                y = position.getY() + distance;
+            }
+            case SOUTH_WEST -> {
+                x = position.getX() - distance;
+                y = position.getY() + distance;
+            }
+            case WEST -> {
+                x = position.getX() - distance;
+                y = position.getY();
+            }
         }
 
+        Move move = new Move(x, y);
+
         if (!outOfBounds(move)) {
-            boardOccupiedBy = board.getBoard()[move.getX()][move.getY()];
+            boardOccupiedBy = board.getBoard()[move.getX() - 1][move.getY() - 1];
         }
 
         return boardOccupiedBy;
