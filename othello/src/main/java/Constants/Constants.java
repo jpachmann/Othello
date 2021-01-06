@@ -9,6 +9,8 @@ public class Constants {
     public static final int BLACK = 0;
     public static final int WHITE = 1;
     public static final int EMPTY = -1;
+    public static final int OUT_OF_BOUNDS = 10;
+
 
     // Board-properties
     public static final int BOARDSIZE = 8;

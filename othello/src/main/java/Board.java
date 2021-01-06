@@ -44,4 +44,27 @@ public class Board {
             y++;
         }
     }
+
+    public void flipEnclosed(int x1, int y1, int x2, int y2){
+        int upperboundX = Math.max(x1, x2);
+        int upperboundY = Math.max(y1, y2);
+
+        for (int x = x1 + 1; x < upperboundX; x++) {
+            for (int y = y1 + 1; y < upperboundY; y++) {
+                flipPiece(x,y);
+            }
+        }
+    }
+
+    public void flipPiece(int x, int y) {
+        if (boardObject[x][y] == BLACK) {
+            setPiece(WHITE, x, y);
+        }
+        else if (boardObject[x][y] == WHITE) {
+            setPiece(BLACK, x, y);
+        }
+        else {
+            throw new IllegalStateException("EMPTY FIELDS CAN'T BE FLIPPED");
+        }
+    }
 }

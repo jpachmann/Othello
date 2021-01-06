@@ -1,7 +1,7 @@
 /**
  * Move contains the coordinates where the piece should be set
- * x: 1..n
- * y: 1..n
+ * x: 0..n
+ * y: 0..n
  */
 
 public class Move {
