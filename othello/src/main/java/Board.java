@@ -46,12 +46,45 @@ public class Board {
     }
 
     public void flipEnclosed(int x1, int y1, int x2, int y2){
+
         int upperboundX = Math.max(x1, x2);
         int upperboundY = Math.max(y1, y2);
+        int lowerboundX = Math.min(x1, x2);
+        int lowerboundY = Math.min(y1, y2);
 
-        for (int x = x1 + 1; x < upperboundX; x++) {
-            for (int y = y1 + 1; y < upperboundY; y++) {
-                flipPiece(x,y);
+        System.out.println("Trying to flip between " + x1 + "," + y1 + " and " + x2 + "," + y2);
+
+        if (x1 - x2 == 0) { //find vertically enclosed
+            for (int y = lowerboundY + 1; y < upperboundY; y++) {
+                flipPiece(x1, y);
+            }
+        }
+        else if (y1 - y2 == 0) { //find horizontally enclosed
+            for (int x = lowerboundX + 1; x < upperboundX; x++) {
+                flipPiece(x, y1);
+            }
+        }
+        else { //find diagonally enclosed
+
+            if ((x1 - x2 < 0 && y1 - y2 > 0) || (x1 - x2 > 0 && y1 - y2 < 0 )) { //lower left to upper right
+                lowerboundX++; //exclude itself
+                upperboundY--; //exclude itself
+
+                while (lowerboundX < upperboundX){
+                    flipPiece(lowerboundX, upperboundY);
+                    lowerboundX++;
+                    upperboundY--;
+                }
+            }
+            else { //lower right to upper left
+                lowerboundX++; //exclude itself
+                lowerboundY++; //exclude itself
+
+                while (lowerboundX < upperboundX){
+                    flipPiece(lowerboundX, lowerboundY);
+                    lowerboundX++;
+                    lowerboundY++;
+                }
             }
         }
     }
@@ -64,7 +97,20 @@ public class Board {
             setPiece(BLACK, x, y);
         }
         else {
+            System.out.println("Tried to flip " + x + "," + y + " which should be empty");
             throw new IllegalStateException("EMPTY FIELDS CAN'T BE FLIPPED");
         }
+    }
+
+    public int countPoints(int color) {
+        int points = 0;
+        for (int x = 0; x < BOARDSIZE; x++) {
+            for (int y = 0; y < BOARDSIZE; y++) {
+                if (boardObject[x][y] == color) {
+                    points++;
+                }
+            }
+        }
+        return points;
     }
 }

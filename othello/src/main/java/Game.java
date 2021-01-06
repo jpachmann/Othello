@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Random;
 
 import static Constants.Constants.*;
@@ -28,67 +27,66 @@ public class Game {
 
         player1.setActivePlayer(true);
 
-        player1.planNextMove(findBestMove(player1));
-        takeTurn();
-        player2.planNextMove(findBestMove(player2));
-        takeTurn();
+        board.printBoard();
     }
 
     public void makeMove() {
+        getActivePlayer().planNextMove(findRandomMove());
+
         Move move = getActivePlayer().getNextMove();
+
         if (gameOver) {
-            throw new IllegalStateException();
+            int pointsBlack = board.countPoints(BLACK);
+            int pointsWhite = board.countPoints(WHITE);
+
+            System.out.println("Player " + BLACK + ": " + pointsBlack + " Points");
+            System.out.println("Player " + WHITE + ": " + pointsWhite + " Points");
+
+            if (pointsBlack > pointsWhite) {
+                setWinner(BLACK);
+            }
+            else {
+                setWinner(WHITE);
+            }
+            System.out.println("GG, Congratz to Player " + getWinner());
         }
-        if (!isLegalMove(move)){
+
+        else if (!isLegalMove(move)){
             gameOver = true;
-            setWinner();
-            System.out.println("GAME IS OVER!");
+            setWinner(getOpponent(getActivePlayer()).getColour());
+            System.out.println("GG, Congratz to Player" + getWinner());
         }
         else {
             board.setPiece(getActivePlayer().getColour(), move.getX(), move.getY());
-
-            getActivePlayer().setActivePlayer(false);
-            getOpponent(getActivePlayer()).setActivePlayer(true);
-
-            getActivePlayer().planNextMove(findBestMove(getActivePlayer()));
-
             board.printBoard();
-        }
-    }
-
-    public void simulateMove(int x, int y) {
-        Move move = new Move(x, y);
-
-        if (gameOver) {
-            throw new IllegalStateException();
-        }
-        if (!isLegalMove(move)){
-            gameOver = true;
-            setWinner();
-            System.out.println("GAME IS OVER!");
-        }
-        else {
-            board.setPiece(getActivePlayer().getColour(), move.getX(), move.getY());
+            board.flipEnclosed(move.getX(), move.getY(), move.opposingPieceX, move.opposingPieceY);
+            board.printBoard();
 
             System.out.println("Player " + getActivePlayer().getColour() + " set his piece on (" + move.getX() + "," +
                     move.getY() + ")");
 
             takeTurn();
-            board.printBoard();
         }
     }
 
-    private Move findBestMove(Player activePlayer) {
+    private Move findRandomMove() {
         int x = rand.nextInt(BOARDSIZE);
         int y = rand.nextInt(BOARDSIZE);
 
         Move move = new Move(x, y);
 
+        int n = 0;
+
         while (!isLegalMove(move)) {
             move.setX(rand.nextInt(BOARDSIZE));
             move.setY(rand.nextInt(BOARDSIZE));
-        }
+            n++;
 
+            if (n >= 1000) { //probably no more possible moves
+                gameOver = true;
+                break;
+            }
+        }
         return move;
     }
 
@@ -127,34 +125,27 @@ public class Game {
             enemyColor = BLACK;
         }
 
-        String pattern = "\\d";
-
-        System.out.println("selbst: " + neighbours[0][0]);
-        System.out.println("1 links oben: " + neighbours[0][1]);
-        System.out.println("2 links oben: " + neighbours[0][2]);
 
         for (int i = 0; i < 8; i++) { // direction (north, northeast etc.)
             boolean canBeFlipped = true;
-
-            int[] x = neighbours[i];
-            String neighboursInDirection = Arrays.toString(x);
-
 
             if (neighbours[i][1] == enemyColor) {
                 for (int n = 2; n < 8; n++) { // depth; "follow that direction"
 
                     if (neighbours[i][n] == EMPTY) { // no connecting piece
-                        System.out.println("No connecting piece" + ", n = " + n + ", i = " + i);
+                        //System.out.println("No connecting piece" + ", n = " + n + ", i = " + i);
                         canBeFlipped = false;
                     }
 
                     if (neighbours[i][n] == OUT_OF_BOUNDS) { // out of bounds
-                        System.out.println("Out of bounds");
+                        //System.out.println("Out of bounds");
                         canBeFlipped = false;
                     }
 
                     if (neighbours[i][n] == playerColor && canBeFlipped) {
-                        board.flipEnclosed(move.getX(), move.getY(), go(move, n, i).getX(), go(move, n, i).getY());
+                        move.opposingPieceX = go(move, n, i).getX();
+                        move.opposingPieceY = go(move, n, i).getY();
+
                         return true;
                     }
                 }
@@ -234,7 +225,6 @@ public class Game {
                 y = position.getY();
             }
         }
-
         return new Move(x, y);
     }
 
@@ -252,8 +242,8 @@ public class Game {
         }
     }
 
-    private void setWinner(){
-        winner = -1;
+    private void setWinner(int winningColor){
+        winner = winningColor;
     }
 
     public boolean isGameOver() {
