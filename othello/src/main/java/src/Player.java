@@ -1,22 +1,28 @@
-/**
- * Player.java
- * Includes Information about Player such as Identity and its next move
- */
+package src;
 
+import java.util.Random;
+
+/**
+ * Simulates a Player with all necessary attributes (such as color) and actions (such as planing the next move).
+ * @author Jakob Pachmann
+ * @version %I%, %G%
+ */
 public class Player {
-    private String playerRole;
-    private int colour;
+    private final String playerRole;
+    private final int colour;
     private Move nextMove;
     private boolean isActivePlayer;
+    private Random rand;
 
     /**
-     * Sets necessary Parameters
+     * Class Constructor
      * @param playerRole Human or AI
      * @param colour Black or White
      */
     public Player(String playerRole, int colour){
         this.playerRole = playerRole;
         this.colour = colour;
+        rand = new Random();
     }
 
     /**
@@ -28,7 +34,7 @@ public class Player {
     }
 
     /**
-     * Players can be controlled by Human or AI
+     * Players can be controlled by a Human or an AI
      * @return "AI" or "HUMAN"
      */
     public String getPlayerRole() {
@@ -36,15 +42,14 @@ public class Player {
     }
 
     /**
-     * Setter for next move
-     * @param move next move
+     * plans next move
      */
-    public void planNextMove(Move move) {
-        nextMove = move;
+    public void planNextMove(Move nextMove) {
+        this.nextMove = nextMove;
     }
 
     /**
-     * Getter for next move
+     * Gets next move
      * @return next move
      */
     public Move getNextMove() {
@@ -55,7 +60,8 @@ public class Player {
         return isActivePlayer;
     }
 
-    public void setActivePlayer(boolean activePlayer) {
+    public void setPlayerActive(boolean activePlayer) {
         isActivePlayer = activePlayer;
     }
+
 }

@@ -1,4 +1,8 @@
-import static Constants.Constants.*;
+package src;
+
+import java.util.Arrays;
+
+import static src.constants.Constants.*;
 
 public class Board {
 
@@ -10,15 +14,16 @@ public class Board {
 
     private void initBoard() {
         boardObject = new int[BOARDSIZE][BOARDSIZE];
-        for(int x = 0; x < BOARDSIZE; x++){
-            for(int y = 0; y < BOARDSIZE; y++){
-                boardObject[x][y] = EMPTY;
-            }
+
+        for (int[] row : boardObject){
+            Arrays.fill(row, EMPTY);
         }
-        boardObject[BOARDSIZE/2 - 1][BOARDSIZE/2 - 1] = BLACK;
-        boardObject[BOARDSIZE/2][BOARDSIZE/2 - 1] = WHITE;
-        boardObject[BOARDSIZE/2 - 1][BOARDSIZE/2] = WHITE;
-        boardObject[BOARDSIZE/2][BOARDSIZE/2] = BLACK;
+
+        // Starting pieces
+        boardObject[BOARDSIZE/2 - 1][BOARDSIZE/2 - 1]   = BLACK;
+        boardObject[BOARDSIZE/2][BOARDSIZE/2 - 1]       = WHITE;
+        boardObject[BOARDSIZE/2 - 1][BOARDSIZE/2]       = WHITE;
+        boardObject[BOARDSIZE/2][BOARDSIZE/2]           = BLACK;
     }
 
     public int[][] getBoard() {
@@ -35,14 +40,14 @@ public class Board {
         int x = 0;
         while(y < BOARDSIZE){
             while (x < BOARDSIZE){
-                System.out.print(boardObject[x][y]);
-                System.out.print("\t");
+                System.out.print(boardObject[x][y] + "\t");
                 x++;
             }
             x = 0;
-            System.out.println();
+            System.out.print("\n");
             y++;
         }
+        System.out.print("\n");
     }
 
     public void flipEnclosed(int x1, int y1, int x2, int y2){
@@ -52,14 +57,14 @@ public class Board {
         int lowerboundX = Math.min(x1, x2);
         int lowerboundY = Math.min(y1, y2);
 
-        System.out.println("Trying to flip between " + x1 + "," + y1 + " and " + x2 + "," + y2);
+        System.out.printf("Trying to flip between %d,%d and %d,%d%n", x1, y1, x2, y2);
 
-        if (x1 - x2 == 0) { //find vertically enclosed
+        if (x1 == x2) { //find vertically enclosed
             for (int y = lowerboundY + 1; y < upperboundY; y++) {
                 flipPiece(x1, y);
             }
         }
-        else if (y1 - y2 == 0) { //find horizontally enclosed
+        else if (y1 == y2) { //find horizontally enclosed
             for (int x = lowerboundX + 1; x < upperboundX; x++) {
                 flipPiece(x, y1);
             }
@@ -90,27 +95,18 @@ public class Board {
     }
 
     public void flipPiece(int x, int y) {
-        if (boardObject[x][y] == BLACK) {
-            setPiece(WHITE, x, y);
-        }
-        else if (boardObject[x][y] == WHITE) {
-            setPiece(BLACK, x, y);
-        }
-        else {
-            System.out.println("Tried to flip " + x + "," + y + " which should be empty");
-            throw new IllegalStateException("EMPTY FIELDS CAN'T BE FLIPPED");
-        }
+        int newColor = switch (boardObject[x][y]) {
+            case BLACK -> WHITE;
+            case WHITE -> BLACK;
+            default -> throw new IllegalStateException(String.format("Tried to flip empty Field %d,%d", x, y));
+        };
+        setPiece(newColor, x, y);
     }
 
     public int countPoints(int color) {
-        int points = 0;
-        for (int x = 0; x < BOARDSIZE; x++) {
-            for (int y = 0; y < BOARDSIZE; y++) {
-                if (boardObject[x][y] == color) {
-                    points++;
-                }
-            }
-        }
-        return points;
+        return (int) Arrays.stream(boardObject).
+                flatMapToInt(Arrays::stream).
+                filter(c -> c == color).
+                count();
     }
 }
